@@ -2,6 +2,13 @@
 
 DIR="$( cd "$( dirname $(readlink -f "${BASH_SOURCE[0]}" ) )" >/dev/null && pwd )"
 
+# Check the listing file exists before doing anything
+
+if [[ ! -f "${DIR}/support/listing" ]]; then
+    echo "[!] Listing file doesn't exist, run init first please" >&2
+    exit 1
+fi
+
 binary=
 libc_ver=
 
@@ -33,8 +40,8 @@ deb_url=$(grep "${libc_ver}" "${DIR}/support/listing")
 if [[ -z "${deb_url}" ]]; then
     echo "[!] Failed to find a relevant .deb" >&2
     exit 1
-elif [[ "$(echo -n ${deb_url} | grep -c '^')" != "1" ]]; then
-    echo "[!] Got multiple candidates for .deb" >&2
+elif [[ ! $(echo -n "${deb_url}" | grep -c '.deb') == "1" ]]; then
+    echo "[!] Got multiple candidates for .deb, candidates:" >&2
     echo "${deb_url}"
     exit 1
 fi
@@ -44,15 +51,23 @@ echo "[+] Found .deb @ ${deb_url}, downloading into libc-patch/"
 mkdir -p libc-patch
 rm -rf libc-patch/*
 
-wget -O libc-patch/${libc_ver}.deb "${deb_url}"
-wget -O libc-patch/${libc_ver}.dbg.deb "$(echo ${deb_url} | sed 's/libc6/libc6-dbg/')"
+curl -Sf# "${deb_url}" > libc-patch/${libc_ver}.deb 
 
 if [[ ! $? == "0" ]]; then
-    echo "[!] Failed to download deb"
+    echo "[!] Failed to download deb" >&2
+    exit 1
+fi
+
+curl -Sf# "$(echo ${deb_url} | sed 's/libc6/libc6-dbg/')" > libc-patch/${libc_ver}.dbg.deb 
+
+if [[ ! $? == "0" ]]; then
+    echo "[!] Failed to download debug deb" >&2
     exit 1
 fi
 
 pushd libc-patch > /dev/null 2>&1 
+
+echo "[+] Extracting debs"
 
 dpkg-deb --extract ${libc_ver}.deb .
 dpkg-deb --extract ${libc_ver}.dbg.deb .
