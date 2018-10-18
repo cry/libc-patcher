@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-DIR="$( cd "$( dirname $(readlink "${BASH_SOURCE[0]}" ) )" >/dev/null && pwd )"
+DIR="$( cd "$( dirname $(readlink -f "${BASH_SOURCE[0]}" ) )" >/dev/null && pwd )"
 
 binary=
 libc_ver=
