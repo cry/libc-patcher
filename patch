@@ -9,6 +9,7 @@ if [[ ! -f "${DIR}/support/listing" ]]; then
     exit 1
 fi
 
+
 binary=
 libc_ver=
 
