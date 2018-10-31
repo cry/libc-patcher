@@ -30,6 +30,7 @@ carey@ubuntu-debug in /work/unsw/18s2/cs6447/wargames/war4/babys_first_2 on mast
 [+] Creating backup and patching binary
 'babys_first_2' -> 'babys_first_2-patched'
 [+] Binary patched
+
 carey@ubuntu-debug in /work/unsw/18s2/cs6447/wargames/war4/babys_first_2 on master*
 > ldd babys_first_2*
 babys_first_2:
